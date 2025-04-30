@@ -1,17 +1,17 @@
 [
-    {
-      "title": "Message from User123",
-      "content": "Hey, how are you doing today?",
-      "received": "10 minutes ago"
-    },
-    {
-      "title": "Message from SecretAdmirer",
-      "content": "I really liked your recent post!",
-      "received": "2 hours ago"
-    },
-    {
-      "title": "Message from MysteryGuest",
-      "content": "Do you have any book recommendations?",
-      "received": "1 day ago"
-    }
-  ]
+  {
+    "title": "Message from the Developer",
+    "content": "Email Delivery Notice",
+    "received": "Email functionality may not work reliably because this is not a production-grade application."
+  },
+  {
+    "title": "Message from the Developer",
+    "content": "Looking to Explore the App?",
+    "received": "You can use the demo credentials shown in the carousel to log in and try out the features."
+  },
+  {
+    "title": "Message from the Developer",
+    "content": "Username: watch",
+    "received": "Password: watch12345"
+  }
+]

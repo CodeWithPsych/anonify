@@ -21,6 +21,7 @@ import axios, { AxiosError } from 'axios';
 import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { signUpSchema } from '@/schemas/signUpSchema';
+import ReactLoader from '@/components/ReactLoader';
 
 
 export default function SignUpForm() {
@@ -33,6 +34,7 @@ export default function SignUpForm() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const usernameDebounced = useDebounceCallback(setUsername, 500);
     const emailDebounced = useDebounceCallback(setEmail, 500);
+    const [loading, setLoading] = useState(false);
 
     const router = useRouter();
 
@@ -63,7 +65,7 @@ export default function SignUpForm() {
                     setIsCheckingUsername(false);
                 }
             }
-   
+
             if (emailAddress) {
                 setIsCheckingEmail(true);
                 setEmailMessage('');
@@ -83,22 +85,24 @@ export default function SignUpForm() {
                 }
             }
         };
-   
+
         checkUsernameUnique();
     }, [username, emailAddress]);
-   
+
     const onSubmit = async (data: z.infer<typeof signUpSchema>) => {
         setIsSubmitting(true);
+        setLoading(true);
         try {
+
             const response = await axios.post<ApiResponse>('/api/sign-up', data);
             toast("Success", {
                 description: response.data.message,
-            });
-
-            router.replace(`/verify/${username}`);
-
+            })
+            router.push(`/verify/${username}`);
+            setLoading(false);
             setIsSubmitting(false);
         } catch (error) {
+            setLoading(false);
             console.error('Error during sign-up:', error);
 
             const axiosError = error as AxiosError<ApiResponse>;
@@ -111,7 +115,13 @@ export default function SignUpForm() {
             setIsSubmitting(false);
         }
     };
-    return (
+    const handleSignInClick = () => {
+        setLoading(true);
+        setTimeout(() => {
+            router.push('/sign-in');
+        }, 500);
+    };
+    return (loading ? <ReactLoader /> :
         <div className="flex justify-center items-center min-h-screen bg-gray-800">
             <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-md">
                 <div className="text-center">
@@ -156,11 +166,11 @@ export default function SignUpForm() {
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Email</FormLabel>
-                                    <Input {...field}  onChange={(e) => {
-                                            field.onChange(e);
-                                            emailDebounced(e.target.value);
-                                        }} name="email" />
-                                         {isCheckingEmail && <Loader2 className="animate-spin" />}
+                                    <Input {...field} onChange={(e) => {
+                                        field.onChange(e);
+                                        emailDebounced(e.target.value);
+                                    }} name="email" />
+                                    {isCheckingEmail && <Loader2 className="animate-spin" />}
                                     {!isCheckingEmail && emailMessage && (
                                         <p
                                             className={`text-sm ${emailMessage === 'Email is available for registration'
@@ -204,9 +214,12 @@ export default function SignUpForm() {
                 <div className="text-center mt-4">
                     <p>
                         Already a member?{' '}
-                        <Link href="/sign-in" className="text-blue-600 hover:text-blue-800">
+                        <button
+                            onClick={handleSignInClick}
+                            className="text-blue-600 hover:text-blue-800 cursor-pointer underline"
+                        >
                             Sign in
-                        </Link>
+                        </button>
                     </p>
                 </div>
             </div>

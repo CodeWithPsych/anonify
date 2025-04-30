@@ -16,8 +16,11 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { toast } from "sonner";
 import { signInSchema } from '@/schemas/signInSchema';
+import { useState } from 'react';
+import ReactLoader from '@/components/ReactLoader';
 
 export default function SignInForm() {
+    const [loading, setLoading] = useState(false);
     const router = useRouter();
 
     const form = useForm<z.infer<typeof signInSchema>>({
@@ -29,12 +32,13 @@ export default function SignInForm() {
     });
 
     const onSubmit = async (data: z.infer<typeof signInSchema>) => {
+        setLoading(true);
         const result = await signIn('credentials', {
             redirect: false,
             identifier: data.identifier,
             password: data.password,
         });
-
+        setLoading(false);
         if (result?.error) {
             if (result.error === 'CredentialsSignin') {
                 toast('Login Failed', {
@@ -48,11 +52,21 @@ export default function SignInForm() {
         }
 
         if (result?.url) {
-            router.replace('/dashboard');
+            setLoading(true);
+            setTimeout(() => {
+                router.push('/dashboard');
+            }, 500);
         }
     };
 
-    return (
+    const handleSignUpClick = () => {
+        setLoading(true);
+        setTimeout(() => {
+            router.push('/sign-up');
+        }, 500);
+    };
+
+    return (loading ? <ReactLoader /> : (
         <div className="flex justify-center items-center min-h-screen bg-gray-800">
             <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-md">
                 <div className="text-center">
@@ -85,18 +99,21 @@ export default function SignInForm() {
                                 </FormItem>
                             )}
                         />
-                        <Button className= 'cursor-pointer w-full' type="submit">Sign In</Button>
+                        <Button className='cursor-pointer w-full' type="submit">Sign In</Button>
                     </form>
                 </Form>
                 <div className="text-center mt-4">
                     <p>
                         Not a member yet?{' '}
-                        <Link href="/sign-up" className="text-blue-600 hover:text-blue-800">
+                        <button
+                            onClick={handleSignUpClick}
+                            className="text-blue-600 hover:text-blue-800 cursor-pointer underline"
+                        >
                             Sign up
-                        </Link>
+                        </button>
                     </p>
                 </div>
             </div>
         </div>
-    );
+    ));
 }

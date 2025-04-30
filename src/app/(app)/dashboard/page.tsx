@@ -14,6 +14,7 @@ import { useSession } from 'next-auth/react';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { AcceptMessageSchema } from '@/schemas/acceptMessageSchema';
+import ReactLoader from '@/components/ReactLoader';
 
 function UserDashboard() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -105,7 +106,7 @@ function UserDashboard() {
   };
 
   if (!session || !session.user) {
-    return <div></div>;
+    return <ReactLoader/>;
   }
 
   const { username } = session.user as User;
@@ -119,6 +120,7 @@ function UserDashboard() {
       description: 'Profile URL has been copied to clipboard.',
     });
   };
+
 
   return (
     <div className="my-8 mx-4 md:mx-8 lg:mx-auto p-6 bg-white rounded w-full max-w-6xl">
