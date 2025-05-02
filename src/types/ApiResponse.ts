@@ -5,4 +5,12 @@ export interface ApiResponse {
   message: string;
   isAcceptingMessages?: boolean;
   messages?: Array<Message>;
+  result?: string;
 }
+// @/types/SuggestMessagesResponse.ts
+
+export type SuggestMessagesResponse = {
+  success: boolean;
+  message: string;
+  result: string;
+};

@@ -20,7 +20,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from "sonner";
 import * as z from 'zod';
-import { ApiResponse } from '@/types/ApiResponse';
+import { ApiResponse } from '@/types/ApiResponse'; // or use SuggestMessagesResponse
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { messageSchema } from '@/schemas/messageSchema';
@@ -41,7 +41,6 @@ const SendMessage = () => {
         "Just wanted to say you're appreciated.",
         "Keep pushing forward, you're doing great!"
     ];
-
 
     const messageContent = form.watch('content');
     const [isLoading, setIsLoading] = useState(false);
@@ -73,14 +72,14 @@ const SendMessage = () => {
     };
 
     const fetchSuggestedMessages = async () => {
-        setGeminiMessages(true)
+        setGeminiMessages(true);
         try {
             const response = await axios.post<ApiResponse>('/api/suggest-messages');
 
             const messages = response.data.result
-                .split(specialChar)
+                ?.split(specialChar)
                 .map((msg) => msg.trim())
-                .filter((msg) => msg.split(' ').length <= 15);
+                .filter((msg) => msg.split(' ').length <= 15) ?? [];
 
             let finalMessages = messages.slice(0, 3);
             if (finalMessages.length < 3 && messages.length >= 4) {
@@ -88,11 +87,11 @@ const SendMessage = () => {
             }
 
             setSuggestedMessages(finalMessages);
-            setGeminiMessages(false)
         } catch (error) {
             console.error('Error fetching messages:', error);
             toast.error('Failed to fetch suggested messages');
-            setGeminiMessages(false)
+        } finally {
+            setGeminiMessages(false);
         }
     };
 
@@ -175,7 +174,6 @@ const SendMessage = () => {
                         </CardContent>
                     )}
                 </Card>
-
             </div>
 
             <Separator className="my-6" />
